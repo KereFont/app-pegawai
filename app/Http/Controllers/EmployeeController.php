@@ -7,7 +7,9 @@ use Illuminate\Http\Request;
 
 class EmployeeController extends Controller
 {
-
+    /**
+     * Display a listing of the resource.
+     */
     public function index()
     {
         $employees = Employee::latest()->paginate(5);
@@ -21,6 +23,8 @@ class EmployeeController extends Controller
     public function create()
     {
         return view('employees.create');
+        $departments = \App\Models\Department::orderBy('nama_departemen')->get();
+        return view('employees.create', compact('departments'));
     }
 
     /**
@@ -29,16 +33,17 @@ class EmployeeController extends Controller
     public function store(Request $request)
     {
         $request->validate([
-            'nama_lengkap' => 'required|string|max:255',
-            'email' => 'required|email|max:255',
-            'nomor_telepon' => 'required|string|max:20',
-            'tanggal_lahir' => 'required|date',
-            'alamat' => 'required|string|max:255',
-            'tanggal_masuk' => 'required|date',
-            'status' => 'required|string|max:50',
+            'nama_lengkap'   =>  'required|string|max:255',
+            'email'          =>  'required|email|max:255',
+            'nomor_telepon'  =>  'required|string|max:20',
+            'tanggal_lahir'  =>  'required|date',
+            'alamat'         =>  'required|string|max:255',
+            'tanggal_masuk'  =>  'required|date',
+            'status'         =>  'required|string|max:50',
         ]);
         Employee::create($request->all());
         return redirect()->route('employees.index');
+        return view('employees.create', compact('departments'));
     }
 
     /**
@@ -46,8 +51,8 @@ class EmployeeController extends Controller
      */
     public function show(string $id)
     {
-        $employee = Employee::find($id);
-        return view('employees.show', compact('employee'));
+        $employees = Employee::find($id);
+        return view('employees.show', compact('employees'));
     }
 
     /**
@@ -55,8 +60,8 @@ class EmployeeController extends Controller
      */
     public function edit(string $id)
     {
-        $employee = Employee::find($id);
-        return view('employees.edit', compact('employee'));
+        $employees = Employee::find($id);
+        return view('employees.edit', compact('employees'));
     }
 
     /**
@@ -65,16 +70,17 @@ class EmployeeController extends Controller
     public function update(Request $request, string $id)
     {
         $request->validate([
-            'nama_lengkap' => 'required|string|max:255',
-            'email' => 'required|email|max:255',
-            'nomor_telepon' => 'required|string|max:20',
-            'tanggal_lahir' => 'required|date',
-            'alamat' => 'required|string|max:255',
-            'tanggal_masuk' => 'required|date',
-            'status' => 'required|string|max:50',
+            'nama_lengkap'   =>  'required|string|max:255',
+            'email'          =>  'required|email|max:255',
+            'nomor_telepon'  =>  'required|string|max:20',
+            'tanggal_lahir'  =>  'required|date',
+            'alamat'         =>  'required|string|max:255',
+            'tanggal_masuk'  =>  'required|date',
+            'status'         =>  'required|string|max:50',
+
         ]);
-        $employee = Employee::findOrFail($id);
-        $employee->update($request->only([
+        $employees = Employee::findOrFail($id);
+        $employees->update($request->only([
             'nama_lengkap',
             'email',
             'nomor_telepon',
@@ -82,6 +88,7 @@ class EmployeeController extends Controller
             'alamat',
             'tanggal_masuk',
             'status',
+            'departemen_id',
         ]));
         return redirect()->route('employees.index');
     }
@@ -91,8 +98,8 @@ class EmployeeController extends Controller
      */
     public function destroy(string $id)
     {
-        $employee = Employee::find($id);
-        $employee->delete();
+        $employees = Employee::find($id);
+        $employees->delete();
         return redirect()->route('employees.index');
     }
 }
